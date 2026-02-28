@@ -1,3 +1,10 @@
+// File: lib.rs - This file is part of AURIA
+// Copyright (c) 2026 AURIA Developers and Contributors
+// Description:
+//     Logging, metrics, and tracing for AURIA Runtime Core.
+//     Provides observability primitives including structured logging,
+//     metrics collection, and distributed tracing support.
+//
 use tracing::{error, info, warn, Level};
 use tracing_subscriber::FmtSubscriber;
 

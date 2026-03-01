@@ -12,3 +12,4 @@ auria-core = { path = "../auria-core", version = "0.1.0"}
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 metrics = "0.21"
+tokio = { version = "1.35", features = ["sync"] }

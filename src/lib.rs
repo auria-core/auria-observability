@@ -117,6 +117,34 @@ impl MetricsCollector {
         self.gauges.write().await.clear();
         self.histograms.write().await.clear();
     }
+
+    pub async fn record_inference(&self, latency: std::time::Duration, success: bool) {
+        let mut labels = std::collections::HashMap::new();
+        labels.insert("success".to_string(), success.to_string());
+        
+        self.increment_counter("auria_inferences_total", 1, labels).await;
+        self.record_histogram("auria_inference_latency_ms", latency.as_secs_f64()).await;
+    }
+
+    pub async fn record_system_metrics(&self) {
+        #[cfg(target_os = "linux")]
+        {
+            if let Ok(meminfo) = std::fs::read_to_string("/proc/meminfo") {
+                for line in meminfo.lines() {
+                    if line.starts_with("MemAvailable:") {
+                        if let Some(kb) = line.split_whitespace().nth(1) {
+                            if let Ok(kb) = kb.parse::<f64>() {
+                                let available_mb = kb / 1024.0;
+                                self.set_gauge("auria_memory_available_mb", available_mb).await;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        self.set_gauge("auria_metrics_recorded", 1.0).await;
+    }
 }
 
 impl Default for MetricsCollector {
